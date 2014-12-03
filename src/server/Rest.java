@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import entity.Customer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,7 +28,7 @@ public class Rest {
     public void run() throws IOException {
         server = HttpServer.create(new InetSocketAddress(ip, port), 0);
         //REST Routes
-        server.createContext("/user", new HandlerUser());
+        server.createContext("/customer", new HandlerCustomer());
         facade = new AuthenticationFacade();
         gson = new Gson();
         server.start();
@@ -59,9 +60,9 @@ public class Rest {
         this.facade = facade;
     }
 
-    class HandlerUser implements HttpHandler {
+    class HandlerCustomer implements HttpHandler {
 
-        public HandlerUser() {
+        public HandlerCustomer() {
         }
 
         @Override
@@ -120,11 +121,10 @@ public class Rest {
             String response = "";
             String path = he.getRequestURI().getPath();
             int lastIndex = path.lastIndexOf("/");
-            if (lastIndex > 0) {  //person/id
-                String username = path.substring(lastIndex + 1);
-                //get user by user name
-                //response = facade.getPerson(id);
-                //throw not found exception
+            if (lastIndex > 0) {
+                String idStr = path.substring(lastIndex + 1);
+                int id = Integer.parseInt(idStr);
+                response = facade.getCustomer(id);
             }
             return response;
         }
@@ -137,10 +137,8 @@ public class Rest {
             if (jsonQuery.contains("<") || jsonQuery.contains(">")) {
                 throw new IllegalArgumentException("Illegal characters in input");
             }
-            //convert and add user
-//            Person p = gson.fromJson(jsonQuery, Person.class);
-//            p = facade.addPerson(jsonQuery);
-//            response = new Gson().toJson(p);
+            Customer c = facade.addCustomer(jsonQuery);
+            response = gson.toJson(c);
             return response;
         }
 
@@ -148,13 +146,12 @@ public class Rest {
             String response = "";
             String path = he.getRequestURI().getPath();
             int lastIndex = path.lastIndexOf("/");
-            if (lastIndex > 0) {  //person/id
+            if (lastIndex > 0) {
                 int id = Integer.parseInt(path.substring(lastIndex + 1));
-                // Call to facade for what ever you want to delete
-                //response = new Gson().toJson(<--Deleted-->);
-                //throw not found exception
+                Customer c = facade.deleteCustomer(id);
+                response = gson.toJson(c);
             } else {
-                throw new InvalidRequestException("Request is missing Username.");
+                throw new InvalidRequestException("Request is missing id.");
             }
             return response;
         }

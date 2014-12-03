@@ -24,7 +24,7 @@ public class AuthenticationFacade implements IAuthenticationFacade {
 
     private static EntityManager createEntityManager() {
         EntityManagerFactory emf
-                = Persistence.createEntityManagerFactory("Sem3CA2PU");
+                = Persistence.createEntityManagerFactory("Sem3CA5FinalJPAPU");
         return emf.createEntityManager();
     }
 
