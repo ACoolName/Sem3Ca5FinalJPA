@@ -1,1 +1,1 @@
-java -cp Sem3CA5FinalJPA.jar rest.Rest 8080 localhost public/
+java -cp Sem3CA5FinalJPA.jar server.Rest 8080 localhost
